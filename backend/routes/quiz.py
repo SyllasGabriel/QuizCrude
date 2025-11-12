@@ -1,86 +1,84 @@
-from flask import Blueprint, jsonify, request, session
-from flask_login import login_required, current_user
-from models import db, Question # Assumindo a existência de models.py
+from flask import Blueprint, request, jsonify, session
+from flask_login import login_required
+from models import db, Question # Importa os modelos de dados
 
-quiz_bp = Blueprint('quiz_bp', __name__, url_prefix='/quiz')
+# Cria o Blueprint para as rotas, o prefixo de URL será definido em app.py
+quiz_bp = Blueprint('quiz_bp', __name__)
 
-def get_current_question_data(question):
-    """Formata os dados da pergunta para JSON."""
+def format_question_data(question):
+    """Formata a pergunta, excluindo a resposta correta."""
     return {
         "id": question.id,
         "text": question.text,
-        "options": {
-            "A": question.option_a,
-            "B": question.option_b,
-            "C": question.option_c
-        }
+        # Assume que as opções estão separadas por "; "
+        "options": question.options.split('; ') 
     }
 
-@quiz_bp.route('/', methods=['GET'])
+@quiz_bp.route('/question', methods=['GET'])
 @login_required 
-def quiz_home():
-    """Retorna a pergunta atual e o status do quiz."""
-    question_id = session.get('current_question', 1)
-    question = Question.query.get(question_id)
+def get_current_question():
+    """Retorna a próxima pergunta a ser respondida."""
+    # Garante que a sessão tenha um ID de pergunta (inicia em 1)
+    question_id = session.get('current_question', 1) 
+    question = db.session.get(Question, question_id)
 
     if not question:
-        # Fim do quiz: solicita o redirecionamento para a rota de resultados
+        # Se não houver mais perguntas, indica que o quiz acabou
         return jsonify({
-            "message": "Quiz concluído. Por favor, acesse /quiz/results.",
-            "status": "completed"
+            "status": "completed",
+            "message": "Quiz finalizado. Acesse /api/quiz/results."
         }), 200
 
-    # Retorna a pergunta atual
     return jsonify({
         "status": "active",
         "current_question_number": question_id,
         "score": session.get('quiz_score', 0),
-        "question": get_current_question_data(question)
+        "question": format_question_data(question)
     }), 200
 
 @quiz_bp.route('/submit', methods=['POST'])
 @login_required
 def submit_answer():
-    """Processa a resposta enviada pelo usuário."""
+    """Processa a resposta e avança para a próxima pergunta."""
     data = request.get_json()
-    user_answer = data.get('answer') # Espera 'A', 'B', ou 'C'
+    user_answer = data.get('answer') 
 
-    question_id = session.get('current_question')
-    question = Question.query.get(question_id)
-    
-    if not question or not user_answer:
-        return jsonify({"message": "Dados de resposta incompletos ou quiz não iniciado."}), 400
+    # ID da pergunta que o usuário acabou de responder (ID atual)
+    answered_q_id = session.get('current_question', 1) 
+    answered_question = db.session.get(Question, answered_q_id) 
 
-    # 1. Checagem da Resposta
+    if not answered_question or not user_answer:
+        return jsonify({"message": "Resposta inválida ou sessão fora de sincronia."}), 400
+
     is_correct = False
-    if user_answer == question.correct_option:
+    
+    # Verifica a resposta
+    if user_answer == answered_question.correct_answer:
         session['quiz_score'] += 1
         is_correct = True
-
-    # 2. Avança para a próxima pergunta e retorna o status
-    session['current_question'] = question_id + 1
+        
+    # Avança para a próxima pergunta
+    session['current_question'] += 1
     
     return jsonify({
         "message": "Resposta processada.",
         "correct": is_correct,
-        "your_answer": user_answer,
-        "correct_answer": question.correct_option,
         "new_score": session['quiz_score']
     }), 200
 
 @quiz_bp.route('/results', methods=['GET'])
 @login_required
 def quiz_results():
-    """Exibe o resultado final do quiz."""
+    """Retorna o resultado final do quiz e limpa a sessão."""
     score = session.get('quiz_score', 0)
     total_questions = Question.query.count()
     
-    # Limpa variáveis para permitir um novo quiz
+    # Limpa as variáveis para permitir que o usuário inicie um novo quiz
     session.pop('quiz_score', None)
     session.pop('current_question', None)
     
     return jsonify({
-        "message": "Resultado Final do Quiz",
+        "message": "Resultado Final",
         "score": score,
         "total_questions": total_questions,
         "percentage": (score / total_questions) * 100 if total_questions else 0
