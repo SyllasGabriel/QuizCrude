@@ -1,86 +1,87 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash, session
+from flask import Blueprint, jsonify, request, session
 from flask_login import login_required, current_user
-from models import db, Question # Importe as classes do seu models.py
+from models import db, Question # Assumindo a existência de models.py
 
-# Cria um Blueprint para as rotas do quiz
 quiz_bp = Blueprint('quiz_bp', __name__, url_prefix='/quiz')
 
-# --- Funções Auxiliares para o Quiz ---
+def get_current_question_data(question):
+    """Formata os dados da pergunta para JSON."""
+    return {
+        "id": question.id,
+        "text": question.text,
+        "options": {
+            "A": question.option_a,
+            "B": question.option_b,
+            "C": question.option_c
+        }
+    }
 
-def initialize_quiz_session():
-    """Inicializa ou reseta as variáveis de sessão para um novo quiz."""
-    session['quiz_score'] = 0
-    session['current_question'] = 1
-    # Opcional: session['questions_list'] = [q.id for q in Question.query.all()]
-    # Isso seria útil para embaralhar as perguntas
-
-# --- Rotas do Quiz ---
-
-@quiz_bp.route('/')
+@quiz_bp.route('/', methods=['GET'])
 @login_required 
 def quiz_home():
-    """
-    Rota principal do quiz. 
-    Redireciona para a próxima pergunta ou para o resultado final.
-    """
-    # Garante que a sessão do quiz esteja inicializada
-    if 'current_question' not in session:
-        initialize_quiz_session()
-
-    question_id = session.get('current_question')
+    """Retorna a pergunta atual e o status do quiz."""
+    question_id = session.get('current_question', 1)
     question = Question.query.get(question_id)
 
     if not question:
-        # Fim do quiz: Redireciona para a rota de resultados
-        return redirect(url_for('quiz_bp.quiz_results'))
+        # Fim do quiz: solicita o redirecionamento para a rota de resultados
+        return jsonify({
+            "message": "Quiz concluído. Por favor, acesse /quiz/results.",
+            "status": "completed"
+        }), 200
 
-    # Renderiza a template com a pergunta atual
-    return render_template('quiz.html', 
-                           question=question, 
-                           current_q_num=question_id,
-                           score=session.get('quiz_score', 0))
+    # Retorna a pergunta atual
+    return jsonify({
+        "status": "active",
+        "current_question_number": question_id,
+        "score": session.get('quiz_score', 0),
+        "question": get_current_question_data(question)
+    }), 200
 
 @quiz_bp.route('/submit', methods=['POST'])
 @login_required
 def submit_answer():
     """Processa a resposta enviada pelo usuário."""
-    user_answer = request.form.get('answer')
+    data = request.get_json()
+    user_answer = data.get('answer') # Espera 'A', 'B', ou 'C'
+
     question_id = session.get('current_question')
     question = Question.query.get(question_id)
     
     if not question or not user_answer:
-        flash("Erro ao processar a resposta.", 'danger')
-        return redirect(url_for('quiz_bp.quiz_home'))
+        return jsonify({"message": "Dados de resposta incompletos ou quiz não iniciado."}), 400
 
     # 1. Checagem da Resposta
+    is_correct = False
     if user_answer == question.correct_option:
         session['quiz_score'] += 1
-        flash('Resposta Correta! ✔️', 'success')
-    else:
-        flash(f"Resposta Incorreta. A correta era **{question.correct_option}**.", 'danger')
+        is_correct = True
 
-    # 2. Avança para a próxima pergunta e redireciona
+    # 2. Avança para a próxima pergunta e retorna o status
     session['current_question'] = question_id + 1
     
-    return redirect(url_for('quiz_bp.quiz_home'))
+    return jsonify({
+        "message": "Resposta processada.",
+        "correct": is_correct,
+        "your_answer": user_answer,
+        "correct_answer": question.correct_option,
+        "new_score": session['quiz_score']
+    }), 200
 
-@quiz_bp.route('/results')
+@quiz_bp.route('/results', methods=['GET'])
 @login_required
 def quiz_results():
     """Exibe o resultado final do quiz."""
     score = session.get('quiz_score', 0)
     total_questions = Question.query.count()
     
-    # Limpa as variáveis de sessão para que um novo quiz possa ser iniciado
+    # Limpa variáveis para permitir um novo quiz
     session.pop('quiz_score', None)
     session.pop('current_question', None)
     
-    return render_template('resultado.html', score=score, total=total_questions)
-
-@quiz_bp.route('/reset')
-@login_required
-def reset_quiz():
-    """Permite que o usuário reinicie o quiz a qualquer momento."""
-    initialize_quiz_session()
-    flash("Quiz reiniciado!", 'info')
-    return redirect(url_for('quiz_bp.quiz_home'))
+    return jsonify({
+        "message": "Resultado Final do Quiz",
+        "score": score,
+        "total_questions": total_questions,
+        "percentage": (score / total_questions) * 100 if total_questions else 0
+    }), 200
