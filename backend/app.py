@@ -46,11 +46,11 @@ def create_app():
             return
         
         questions_data = [
-            Question(text="Qual a capital da França?", options="Londres; Paris; Roma; Berlim", correct_answer="Paris"),
-            Question(text="Qual é o maior planeta do nosso sistema solar?", options="Terra; Júpiter; Marte; Saturno", correct_answer="Júpiter"),
-            Question(text="Quem escreveu 'Dom Quixote'?", options="Machado de Assis; Miguel de Cervantes; William Shakespeare; Jorge Luis Borges", correct_answer="Miguel de Cervantes"),
-            Question(text="Qual elemento tem o símbolo químico 'O'?", options="Ouro; Oxigênio; Ósmio; Prata", correct_answer="Oxigênio"),
-            Question(text="Em que ano o homem pisou na Lua pela primeira vez?", options="1965; 1969; 1972; 1980", correct_answer="1969")
+            Question(text="Qual é o líder dos Autobots?", options="Bumblebee; Megatron; Optimus Prime; Ironhide", correct_answer="Optimus Prime"),
+            Question(text="Quem é o principal inimigo dos Autobots?", options="Starscream; Megatron; Shockwave; Soundwave", correct_answer="Megatron"),
+            Question(text="Qual desses Transformers é um Camaro amarelo?", options="Ratchet; Ironhide; Bumblebee; Cliffjumper", correct_answer="Bumblebee"),
+            Question(text="De qual planeta os Transformers vêm?", options="Cybertron; Earth; Krypton; Velocitron", correct_answer="Cybertron"),
+            Question(text="Quem é o braço direito de Megatron?", options="Shockwave; Starscream; Soundwave; Devastator", correct_answer="Soundwave")
         ]
         db.session.bulk_save_objects(questions_data)
         db.session.commit()
