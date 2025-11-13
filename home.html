@@ -16,6 +16,7 @@
     <button class="next-btn hidden" id="next-btn">Próxima</button>
   </div>
 
+
   <script>
     const questions = [
       {
@@ -110,7 +111,9 @@
       }
     ];
 
+
     let currentQuestion = 0;
+
 
     const questionText = document.getElementById("question-text");
     const questionImg = document.getElementById("question-img");
@@ -118,12 +121,14 @@
     const feedback = document.getElementById("feedback");
     const nextBtn = document.getElementById("next-btn");
 
+
     function loadQuestion() {
       const q = questions[currentQuestion];
       questionText.textContent = q.question;
       questionImg.src = q.image;
       feedback.textContent = "";
       nextBtn.classList.add("hidden");
+
 
       optionsContainer.innerHTML = "";
       q.options.forEach((option, index) => {
@@ -134,9 +139,11 @@
       });
     }
 
+
     function checkAnswer(selected) {
       const q = questions[currentQuestion];
       const buttons = optionsContainer.querySelectorAll("button");
+
 
       buttons.forEach((btn, index) => {
         btn.disabled = true;
@@ -147,14 +154,17 @@
         }
       });
 
+
       if (selected === q.correct) {
         feedback.textContent = "✅ Resposta certa!";
       } else {
         feedback.textContent = "❌ Resposta errada!";
       }
 
+
       nextBtn.classList.remove("hidden");
     }
+
 
     nextBtn.addEventListener("click", () => {
       currentQuestion++;
@@ -165,15 +175,22 @@
       }
     });
 
+
     function showResult() {
       questionImg.style.display = "none";
       questionText.textContent = "Fim do Quiz!";
       optionsContainer.innerHTML = "";
       feedback.textContent = "Parabéns por concluir o quiz dos Transformers!";
       nextBtn.classList.add("hidden");
+      
+        
     }
-
     loadQuestion();
   </script>
+  
 </body>
 </html>
+
+
+
+
