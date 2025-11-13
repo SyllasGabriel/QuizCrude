@@ -14,8 +14,6 @@ Este projeto foi desenvolvido como parte da disciplina de "Testes e Automação 
     -   Locust (Testes de Performance)
     -   Selenium (Automação de UI)
     -   Pytest (Estrutura para os testes de sistema)
--   **Ferramentas Adicionais:**
-    -   Docker (Conteinerização da aplicação)
 
 ## 📁 Estrutura do Projeto
 
@@ -138,5 +136,5 @@ Para detalhes completos sobre todos os endpoints disponíveis, os formatos de re
 ## 👥 Autores
 
 -   [] - Backend e Testes
--   []
+-   [] 
 -   []
