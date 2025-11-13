@@ -1,0 +1,19 @@
+# venv
+venv/
+.venv/
+env/
+.env
+
+# python cache files
+__pycache__/
+*.pyc
+
+# database files
+instance/
+
+# IDE and editors folders
+.vscode/
+.idea/
+
+# OS-specific files
+.DS_Store

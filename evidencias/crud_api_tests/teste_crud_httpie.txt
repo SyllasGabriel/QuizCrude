@@ -1,0 +1,327 @@
+C:\Users\andde>http --session=auth POST http://127.0.0.1:5000/api/auth/login username=testuser password=123
+HTTP/1.1 200 OK
+Connection: close
+Content-Length: 65
+Content-Type: application/json
+Date: Thu, 13 Nov 2025 00:14:32 GMT
+Server: Werkzeug/3.1.3 Python/3.13.4
+Set-Cookie: session=.eJwlzjtuwzAMANC7cM5AUj_SlzFMikK9JIhsLS169wbo-Lb3A_uYcX3Bds8VD9jPDhtUPqIVrY1IsGQ0klZ6I7ckgSpJE2cpZKk610OGMTp5juKdM_Zs5NiwxNGrUOrEKmhjaGjJmjRzObiP0ao5c6ekZiHG3FIeKAqfyLpi_m_oQ19zxvPe3yuu-3w9YaMHvNf5vV_-mgEb_v4BczM6kA.aRUi6A.QYXCHpXaFLrGn8H5RHbqNMWeWsk; HttpOnly; Path=/
+Vary: Cookie
+
+{
+    "message": "Login bem-sucedido.",
+    "username": "testuser"
+}
+
+
+
+C:\Users\andde>http --session=auth GET http://127.0.0.1:5000/api/quiz/questions/all
+HTTP/1.1 200 OK
+Connection: close
+Content-Length: 155
+Content-Type: application/json
+Date: Thu, 13 Nov 2025 00:14:50 GMT
+Server: Werkzeug/3.1.3 Python/3.13.4
+Vary: Cookie
+
+[
+    {
+        "id": 1,
+        "options": [
+            "Londres",
+            "Paris",
+            "Roma",
+            "Berlim"
+        ],
+        "text": "Qual a capital da França?"
+    }
+]
+
+
+
+C:\Users\andde>http --session=auth POST http://127.0.0.1:5000/api/quiz/questions text="Qual é a cor do céu?" options="Azul; Verde; Vermelho" correct_answer="Azul"
+HTTP/1.1 201 CREATED
+Connection: close
+Content-Length: 60
+Content-Type: application/json
+Date: Thu, 13 Nov 2025 00:15:43 GMT
+Server: Werkzeug/3.1.3 Python/3.13.4
+Vary: Cookie
+
+{
+    "id": 2,
+    "message": "Question created successfully"
+}
+
+
+
+C:\Users\andde>http --session=auth GET http://127.0.0.1:5000/api/quiz/questions/all
+HTTP/1.1 200 OK
+Connection: close
+Content-Length: 292
+Content-Type: application/json
+Date: Thu, 13 Nov 2025 00:16:27 GMT
+Server: Werkzeug/3.1.3 Python/3.13.4
+Vary: Cookie
+
+[
+    {
+        "id": 1,
+        "options": [
+            "Londres",
+            "Paris",
+            "Roma",
+            "Berlim"
+        ],
+        "text": "Qual a capital da França?"
+    },
+    {
+        "id": 2,
+        "options": [
+            "Azul",
+            "Verde",
+            "Vermelho"
+        ],
+        "text": "Qual é a cor do céu?"
+    }
+]
+
+
+
+C:\Users\andde>http --session=auth PUT http://127.0.0.1:5000/api/quiz/questions/6 text="Qual é a cor do céu durante o dia?"
+HTTP/1.1 404 NOT FOUND
+Connection: close
+Content-Length: 36
+Content-Type: application/json
+Date: Thu, 13 Nov 2025 00:16:41 GMT
+Server: Werkzeug/3.1.3 Python/3.13.4
+Vary: Cookie
+
+{
+    "error": "Question not found"
+}
+
+
+
+C:\Users\andde>http --session=auth PUT http://127.0.0.1:5000/api/quiz/questions/2 text="Qual é a cor do céu durante o dia?"
+HTTP/1.1 200 OK
+Connection: close
+Content-Length: 49
+Content-Type: application/json
+Date: Thu, 13 Nov 2025 00:16:51 GMT
+Server: Werkzeug/3.1.3 Python/3.13.4
+Vary: Cookie
+
+{
+    "message": "Question updated successfully"
+}
+
+
+
+C:\Users\andde>http --session=auth GET http://127.0.0.1:5000/api/quiz/questions/all
+HTTP/1.1 200 OK
+Connection: close
+Content-Length: 306
+Content-Type: application/json
+Date: Thu, 13 Nov 2025 00:17:01 GMT
+Server: Werkzeug/3.1.3 Python/3.13.4
+Vary: Cookie
+
+[
+    {
+        "id": 1,
+        "options": [
+            "Londres",
+            "Paris",
+            "Roma",
+            "Berlim"
+        ],
+        "text": "Qual a capital da França?"
+    },
+    {
+        "id": 2,
+        "options": [
+            "Azul",
+            "Verde",
+            "Vermelho"
+        ],
+        "text": "Qual é a cor do céu durante o dia?"
+    }
+]
+
+
+
+C:\Users\andde>http --session=auth DELETE http://127.0.0.1:5000/api/quiz/questions/2
+HTTP/1.1 200 OK
+Connection: close
+Content-Length: 49
+Content-Type: application/json
+Date: Thu, 13 Nov 2025 00:17:17 GMT
+Server: Werkzeug/3.1.3 Python/3.13.4
+Vary: Cookie
+
+{
+    "message": "Question deleted successfully"
+}
+
+
+
+C:\Users\andde>http --session=auth DELETE http://127.0.0.1:5000/api/quiz/questions/999
+HTTP/1.1 404 NOT FOUND
+Connection: close
+Content-Length: 36
+Content-Type: application/json
+Date: Thu, 13 Nov 2025 00:17:49 GMT
+Server: Werkzeug/3.1.3 Python/3.13.4
+Vary: Cookie
+
+{
+    "error": "Question not found"
+}
+
+
+
+C:\Users\andde>http --session=auth POST http://127.0.0.1:5000/api/quiz/questions text="Pergunta incompleta"
+HTTP/1.1 400 BAD REQUEST
+Connection: close
+Content-Length: 41
+Content-Type: application/json
+Date: Thu, 13 Nov 2025 00:17:59 GMT
+Server: Werkzeug/3.1.3 Python/3.13.4
+Vary: Cookie
+
+{
+    "error": "Missing required fields"
+}
+
+
+
+C:\Users\andde>http --session=auth GET http://127.0.0.1:5000/api/quiz/questions/all
+HTTP/1.1 200 OK
+Connection: close
+Content-Length: 155
+Content-Type: application/json
+Date: Thu, 13 Nov 2025 00:20:40 GMT
+Server: Werkzeug/3.1.3 Python/3.13.4
+Vary: Cookie
+
+[
+    {
+        "id": 1,
+        "options": [
+            "Londres",
+            "Paris",
+            "Roma",
+            "Berlim"
+        ],
+        "text": "Qual a capital da França?"
+    }
+]
+
+
+
+C:\Users\andde>http --session=auth POST http://127.0.0.1:5000/api/auth/login username=testuser password=123
+HTTP/1.1 401 UNAUTHORIZED
+Connection: close
+Content-Length: 47
+Content-Type: application/json
+Date: Thu, 13 Nov 2025 00:22:53 GMT
+Server: Werkzeug/3.1.3 Python/3.13.4
+Vary: Cookie
+
+{
+    "message": "Credenciais inválidas."
+}
+
+
+
+C:\Users\andde>http --session=auth POST http://127.0.0.1:5000/api/auth/register username=testuser password=123
+HTTP/1.1 201 CREATED
+Connection: close
+Content-Length: 59
+Content-Type: application/json
+Date: Thu, 13 Nov 2025 00:24:04 GMT
+Server: Werkzeug/3.1.3 Python/3.13.4
+
+{
+    "message": "Registro bem-sucedido. Faça login."
+}
+
+
+
+C:\Users\andde>http --session=auth POST http://127.0.0.1:5000/api/auth/login username=testuser password=123
+HTTP/1.1 200 OK
+Connection: close
+Content-Length: 55
+Content-Type: application/json
+Date: Thu, 13 Nov 2025 00:24:10 GMT
+Server: Werkzeug/3.1.3 Python/3.13.4
+Vary: Cookie
+
+{
+    "message": "Você já está logado."
+}
+
+
+
+C:\Users\andde>http --session=auth GET http://127.0.0.1:5000/api/quiz/questions/all
+HTTP/1.1 200 OK
+Connection: close
+Content-Length: 882
+Content-Type: application/json
+Date: Thu, 13 Nov 2025 00:24:17 GMT
+Server: Werkzeug/3.1.3 Python/3.13.4
+Vary: Cookie
+
+[
+    {
+        "id": 1,
+        "options": [
+            "Londres",
+            "Paris",
+            "Roma",
+            "Berlim"
+        ],
+        "text": "Qual a capital da França?"
+    },
+    {
+        "id": 2,
+        "options": [
+            "Terra",
+            "Júpiter",
+            "Marte",
+            "Saturno"
+        ],
+        "text": "Qual é o maior planeta do nosso sistema solar?"
+    },
+    {
+        "id": 3,
+        "options": [
+            "Machado de Assis",
+            "Miguel de Cervantes",
+            "William Shakespeare",
+            "Jorge Luis Borges"
+        ],
+        "text": "Quem escreveu 'Dom Quixote'?"
+    },
+    {
+        "id": 4,
+        "options": [
+            "Ouro",
+            "Oxigênio",
+            "Ósmio",
+            "Prata"
+        ],
+        "text": "Qual elemento tem o símbolo químico 'O'?"
+    },
+    {
+        "id": 5,
+        "options": [
+            "1965",
+            "1969",
+            "1972",
+            "1980"
+        ],
+        "text": "Em que ano o homem pisou na Lua pela primeira vez?"
+    }
+]
