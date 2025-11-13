@@ -63,9 +63,9 @@ Este guide explica como interagir com o backend para o Quiz App.
 -   **Corpo da Requisição (JSON):**
     ```json
     {
-        "text": "Qual é a cor do sol?",
-        "options": "Amarelo; Branco; Laranja",
-        "correct_answer": "Amarelo"
+        "text": "Qual é o líder dos Autobots?",
+        "options": ["Bumblebee", "Megatron", "Optimus Prime", "Ironhide",]
+        "correct_answer": 2
     }
     ```
 -   **Resposta (`201 Created`):** `{ "message": "Question created successfully", "id": 7 }`
@@ -76,7 +76,9 @@ Este guide explica como interagir com o backend para o Quiz App.
 -   **Corpo da Requisição (JSON):** (Envie apenas os campos que deseja alterar)
     ```json
     {
-        "text": "Qual é a cor principal do sol visto da Terra?"
+        "text": "Quem é o principal inimigo dos Autobots??",
+        "options": ["Starscream", "Megatron", "Shockwave", "Soundwave",]
+        "correct_answer": 1
     }
     ```
 -   **Respostas:**
