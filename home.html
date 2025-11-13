@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="styles2.css">
+</head>
+<body>
+     <div class="quiz-container">
+    <h1>Quiz Transformers </h1>
+    <img id="question-img" src="" alt="Imagem da pergunta">
+    <div class="question" id="question-text"></div>
+    <div class="options" id="options"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="next-btn hidden" id="next-btn">Próxima</button>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "Qual é o líder dos Autobots?",
+        image: "https://preview.redd.it/srlhvm16nbn21.png?width=1646&format=png&auto=webp&s=a9df08a1bd05889ff1e2ff2ae8979c6f091b3db1",
+        options: ["Bumblebee", "Megatron", "Optimus Prime", "Ironhide"],
+        correct: 2
+      },
+      {
+        question: "Quem é o principal inimigo dos Autobots?",
+        image: "https://i.pinimg.com/originals/54/f2/fd/54f2fd641aab933615e106327b24e933.jpg",
+        options: ["Starscream", "Megatron", "Shockwave", "Soundwave"],
+        correct: 1
+      },
+      {
+        question: "Qual desses Transformers é um Camaro amarelo?",
+        image: "https://www.dhresource.com/webp/m/0x0/f2/albu/g9/M00/16/40/rBVaWFz2ZDqABEDgAAE_RPyNcZw929.jpg",
+        options: ["Ratchet", "Ironhide", "Bumblebee", "Cliffjumper"],
+        correct: 2
+      },
+      {
+        question: "De qual planeta os Transformers vêm?",
+        image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzoo9BYsC_w8hTfjtVoPnNU4rh0pbf3-XMVA&s",
+        options: ["Cybertron", "Earth", "Krypton", "Velocitron"],
+        correct: 0
+      },
+      {
+        question: "Quem é o braço direito de Megatron?",
+        image: "https://i.redd.it/what-are-your-thoughts-on-soundwaves-design-in-the-movie-v0-qbgz2hwmdmqf1.png?width=862&format=png&auto=webp&s=a99f43e572660432cc62b76f757ad34866246ced",
+        options: ["Shockwave", "Starscream", "Soundwave", "Devastator"],
+        correct: 2
+      }
+    ];
+
+    let currentQuestion = 0;
+
+    const questionText = document.getElementById("question-text");
+    const questionImg = document.getElementById("question-img");
+    const optionsContainer = document.getElementById("options");
+    const feedback = document.getElementById("feedback");
+    const nextBtn = document.getElementById("next-btn");
+
+    function loadQuestion() {
+      const q = questions[currentQuestion];
+      questionText.textContent = q.question;
+      questionImg.src = q.image;
+      feedback.textContent = "";
+      nextBtn.classList.add("hidden");
+
+      optionsContainer.innerHTML = "";
+      q.options.forEach((option, index) => {
+        const btn = document.createElement("button");
+        btn.textContent = option;
+        btn.addEventListener("click", () => checkAnswer(index));
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    function checkAnswer(selected) {
+      const q = questions[currentQuestion];
+      const buttons = optionsContainer.querySelectorAll("button");
+
+      buttons.forEach((btn, index) => {
+        btn.disabled = true;
+        if (index === q.correct) {
+          btn.style.backgroundColor = "#00ff7f";
+        } else if (index === selected) {
+          btn.style.backgroundColor = "#ff4d4d";
+        }
+      });
+
+      if (selected === q.correct) {
+        feedback.textContent = "✅ Resposta certa!";
+      } else {
+        feedback.textContent = "❌ Resposta errada!";
+      }
+
+      nextBtn.classList.remove("hidden");
+    }
+
+    nextBtn.addEventListener("click", () => {
+      currentQuestion++;
+      if (currentQuestion < questions.length) {
+        loadQuestion();
+      } else {
+        showResult();
+      }
+    });
+
+    function showResult() {
+      questionImg.style.display = "none";
+      questionText.textContent = " Fim do Quiz!";
+      optionsContainer.innerHTML = "";
+      feedback.textContent = "Parabéns por concluir o quiz dos Transformers!";
+      nextBtn.classList.add("hidden");
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>
