@@ -49,18 +49,18 @@
       border: none;
       border-radius: 8px;
       outline: none;
-      background: rgba(0, 0, 0, 0.267);
+      background: rgba(240, 240, 240, 0.267);
       color: #fff;
       font-size: 1rem;
       transition: 0.3s;
     }
 
     input::placeholder {
-      color: #dddddd;
+      color: #ffffff;
     }
 
     input:focus {
-      background: rgba(255, 255, 255, 0.3);
+      background: rgba(53, 53, 53, 0.801);
     }
 
     button {
